@@ -368,6 +368,7 @@ export default defineConfig({
   base: isSingleFile || isElectronBuild ? "./" : "/",
   outDir,
   plugins,
+
   server: {
     host: "127.0.0.1",
     warmup: {
@@ -387,6 +388,21 @@ export default defineConfig({
       "Cross-Origin-Resource-Policy": "cross-origin"
     }
   },
+
+  // Production preview server (Render)
+  preview: {
+    host: "0.0.0.0",
+    allowedHosts: [
+      "yuki.nexadock.net",
+      ".nexadock.net"
+    ],
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+      "Cross-Origin-Resource-Policy": "cross-origin"
+    }
+  },
+
   optimizeDeps: {
     include: [
       "monaco-editor",
@@ -401,12 +417,14 @@ export default defineConfig({
       "vite-plugin-node-polyfills/shims/buffer"
     ]
   },
+
   define: {
     __GIT_COMMIT__: JSON.stringify(commitHash),
     __README_CONTENT__: JSON.stringify(readmeContent),
     __SINGLE_FILE__: isSingleFile,
     __PACKAGE_LICENSES__: JSON.stringify(packageLicenses)
   },
+
   build: {
     target: "esnext",
     minify: isDevBuild ? false : "esbuild",
@@ -418,10 +436,13 @@ export default defineConfig({
     assetsInlineLimit: 100000,
     rollupOptions: {
       treeshake: !isDevBuild,
-      external: isSingleFile ? ["7z-wasm", "archive-wasm", "clippyjs", /^clippyjs\/.*/] : [],
+      external: isSingleFile
+        ? ["7z-wasm", "archive-wasm", "clippyjs", /^clippyjs\/.*/]
+        : [],
       output: baseOutput
     }
   },
+
   esbuild: {
     legalComments: "inline"
   }
